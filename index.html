@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #container{
+        margin: auto;
+        width: fit-content;
+        }
+        #container img{
+           height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add Product</h1>
+    <div>
+        <input type="number" id="id" placeholder="Id">
+        <input type="text" id="name" placeholder="Name">
+        <input type="number" id="price" placeholder="Price">
+        <button onclick="addProduct()">Add Product</button>
+
+        <h1>Delete</h1>
+        <input type="text" id='dd' placeholder="Enter Id to Delete">
+        <button onclick="delet()">Delete</button>
+    </div>
+    <h1>Get Product By Id</h1>
+    <input type="text" placeholder= "Enter Id of Product You Want" id='proID'>
+    <button onclick="get()">Get Product</button>
+    <div id="container"></div>
+    <h1>Update an Existing Product</h1>
+    <input type="text" placeholder="Enter Product Id" id='idUp'>
+    <input type="text" placeholder="Enter New Name" id='nameUp'>
+    <input type="text" placeholder="Enter New Price" id='priceUp'>
+    <button onclick="update()">Update</button>
+</body>
+</html>
+
+<script>
+    async function addProduct(){
+        let data = {
+            id:document.getElementById('id').value,
+            name:document.getElementById('name').value,
+            price:document.getElementById('price').value,
+        }
+
+        
+            let response = await fetch('http://localhost:3000/api/products',{
+
+            method: "POST",
+            body:JSON.stringify(data),
+            headers:{
+            "Content-Type":'application/json',
+           },
+           })
+           let d = await response.json();
+           console.log(d);
+           alert(`Product with ID ${data.id} is Now Added`)
+        }
+
+     async function delet(){
+          
+        let id = document.getElementById('dd').value;
+
+        let response = await fetch(`http://localhost:3000/api/products/${id}`,{
+         method: "DELETE",
+         headers:{
+          "Content-Type":'application/json',
+          },
+         })
+         alert(`Product with ID ${id} is Now Deleted`)
+      }   
+     async function get()
+     {
+        let cont = document.getElementById('container');
+        cont.innerHTML = ""
+        let product = document.getElementById('proID').value;
+
+        let response = await fetch(`http://localhost:3000/api/products/${product}`,{
+           method:"GET",
+          headers:{
+            "Content-Type":'application/json',
+          }
+        })
+        let data = await response.json();
+        console.log(data)
+        
+        let nameDiv = document.createElement('div');
+        let price = document.createElement('p'); 
+        let id = document.createElement('div');
+        let image = document.createElement('img');
+        image.src = 'https://www.cureuppharma.in/wp-content/uploads/2018/06/dummy.jpg'
+        id.textContent ="ID: "+ data.id;
+        nameDiv.textContent ="Name: "+ data.name;
+        price.textContent ="Price: "+  data.price; 
+        
+        cont.append(image, nameDiv ,price , id)
+    }
+    async function update(){
+         
+        let data = {
+            id:document.getElementById('idUp').value,
+            name:document.getElementById('nameUp').value,
+            price:document.getElementById('priceUp').value,
+        }
+        let response = await fetch(`http://localhost:3000/api/products/${data.id}`,{
+           method:"PUT",
+           body:JSON.stringify(data),
+          headers:{
+            "Content-Type":'application/json',
+          }
+        })
+        let d = await response.json();
+        console.log(d)
+        alert('Product has been updated')
+    }
+</script>
